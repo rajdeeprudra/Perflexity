@@ -1,8 +1,11 @@
 import express from 'express';
-import {tavily} from '@tavily/core';
+import { tavily } from '@tavily/core';
 import { Output, streamText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 import z from 'zod';
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from './prompt';
+
+
 const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
 
@@ -19,9 +22,9 @@ app.post("/Perflexity_ask", async(req,res)=>{
 
     //step 3(TODO)- check is we have web search indexed for a similar query
 
-    // step-4             web search to gather resources
+    // step-4 web search to gather resources
 
-       const webSearchResponse = await client.search("", {
+       const webSearchResponse = await client.search(query, {
         searchDepth: "advanced"
         })
         
@@ -38,15 +41,25 @@ app.post("/Perflexity_ask", async(req,res)=>{
    
     const result = streamText({
         model: 'openai/gpt-5.4',
-        prompt: 'Invent a new holiday and describe its traditions.',
+        prompt: prompt,
         system: SYSTEM_PROMPT,
         
     });
 
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
     for await (const textPart of result.textStream){
-       res.end(textPart);
+       res.write(textPart);
     }
-    //step 6- also stream beack the sources and the follow up questions (which we can get from another parallel LLM call)
+
+    res.write("-----------SOURCES-----------\n")
+    //step 7- also stream beack the sources and the follow up questions (which we can get from another parallel LLM call)
+    webSearchResult.forEach(result => res.write(JSON.stringify(result)));
+
+    //step -8 end the event stream
+    res.end();
 });
     
 
