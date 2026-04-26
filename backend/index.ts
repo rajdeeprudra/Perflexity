@@ -2,7 +2,7 @@ import express from 'express';
 import { tavily } from '@tavily/core';
 import { Output, streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import z from 'zod';
+import z, { url } from 'zod';
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from './prompt';
 
 
@@ -13,6 +13,23 @@ const app = express();
 
 app.use(express.json());
 
+//signup
+app.post("/signup",(req,res)=>{
+
+});
+//signin
+app.post("/signin",(req,res)=>{
+
+});
+//get past conversations
+app.get("/conversations", (req,res)=>{
+
+});
+//get past conversation by id
+app.get("/conversations/conversationId", (req,res)=>{
+
+});
+// perflexity ask post
 app.post("/Perflexity_ask", async(req,res)=>{
     // step 1- get the query from the user
     const query = req.body.query;
@@ -54,14 +71,24 @@ app.post("/Perflexity_ask", async(req,res)=>{
        res.write(textPart);
     }
 
-    res.write("-----------SOURCES-----------\n")
-    //step 7- also stream beack the sources and the follow up questions (which we can get from another parallel LLM call)
-    webSearchResult.forEach(result => res.write(JSON.stringify(result)));
+    res.write("\n<SOURCES>\n")
 
+    //step 7- also stream beack the sources and the follow up questions (which we can get from another parallel LLM call)
+    res.write(JSON.stringify(webSearchResult.map(result => ({url:result.url}))));
+
+    res.write("\n</SOURCES>\n")
     //step -8 end the event stream
     res.end();
 });
-    
+ 
+
+//end point for followup question
+app.post("/Perflexity_ask/follow_up", async(req,res)=>{
+    // step-1 get the existing chats from db
+    //step -2 forward the full history to the llm
+    //step -2.5 - TODO : - Do context engineering here
+    // step-3 stream the responce to the user 
+})
 
 
 app.listen (3000);
