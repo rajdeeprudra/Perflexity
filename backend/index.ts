@@ -3,6 +3,7 @@ import { tavily } from '@tavily/core';
 import { Output, streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import z, { url } from 'zod';
+import  type { Jwt} from 'jsonwebtoken';
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from './prompt';
 import { prisma } from './db';
 
@@ -15,13 +16,9 @@ const app = express();
 app.use(express.json());
 
 //signup
-app.post("/signup",(req,res)=>{
 
-});
 //signin
-app.post("/signin",(req,res)=>{
 
-});
 //get past conversations
 app.get("/conversations", (req,res)=>{
 
