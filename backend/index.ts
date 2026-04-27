@@ -4,6 +4,7 @@ import { Output, streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import z, { url } from 'zod';
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from './prompt';
+import { prisma } from './db';
 
 
 const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
@@ -90,8 +91,11 @@ app.post("/Perflexity_ask/follow_up", async(req,res)=>{
     // step-3 stream the responce to the user 
 })
 
+app.get("/health", (req,res)=>{
+    res.status(200).json({message: "We good!"});
+});
 
-app.listen (3000);
+app.listen (5000);
 
 
 
